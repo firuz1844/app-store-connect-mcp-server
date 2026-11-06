@@ -604,3 +604,28 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [Model Context Protocol Documentation](https://modelcontextprotocol.io)
 - [App Store Connect API Documentation](https://developer.apple.com/documentation/appstoreconnectapi)
 - [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
+### Xcode command security
+
+Project and workspace paths are passed to `xcodebuild` as individual arguments
+without a command shell. Spaces, quotes, dollar signs and backticks in existing
+project names are treated literally.
+
+Regression test (uses a temporary fake `xcodebuild`; no Xcode or credentials needed):
+
+```sh
+node --test tests/xcode-execution.test.mjs
+```
+
+### Analytics download security
+
+Analytics segment URLs are pre-signed. Downloads accept HTTPS URLs without URL
+credentials, preserve their signed query strings, and never send an Apple bearer
+token, including to external CDN hosts. Redirects are rejected; use the final
+segment URL returned by Apple. This does not restrict all destinations or provide
+a general SSRF policy. Sales and finance API requests remain authenticated.
+
+Regression test (no network or Apple credentials):
+
+```sh
+node --test tests/report-download.test.mjs
+```

@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { downloadReportSegment } from './report-download.js';
 import { AuthService } from './auth.js';
 import { AppStoreConnectConfig } from '../types/index.js';
 
@@ -53,13 +54,7 @@ export class AppStoreConnectClient {
   }
 
   async downloadFromUrl(url: string): Promise<any> {
-    const token = await this.authService.generateToken();
-    
-    const response = await axios.get(url, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
+    const response = await downloadReportSegment(url);
 
     return {
       data: response.data,
