@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { downloadReportSegment } from './report-download.js';
 import { AuthService } from './auth.js';
 export class AppStoreConnectClient {
     axiosInstance;
@@ -40,12 +41,7 @@ export class AppStoreConnectClient {
         return this.request('PATCH', url, data);
     }
     async downloadFromUrl(url) {
-        const token = await this.authService.generateToken();
-        const response = await axios.get(url, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        const response = await downloadReportSegment(url);
         return {
             data: response.data,
             contentType: response.headers['content-type'],
