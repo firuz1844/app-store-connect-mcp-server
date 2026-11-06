@@ -1,3 +1,4 @@
+import { downloadReportSegment } from './services/report-download.js';
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { ListToolsRequestSchema, CallToolRequestSchema, ErrorCode, McpError } from "@modelcontextprotocol/sdk/types.js";
@@ -1042,12 +1043,7 @@ class AppStoreConnectServer {
                         if (!segmentUrl) {
                             throw new McpError(ErrorCode.InvalidParams, "segmentUrl is required");
                         }
-                        // Download from the provided URL (these are pre-signed URLs from Apple)
-                        const response = await axios.get(segmentUrl, {
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
-                        });
+                        const response = await downloadReportSegment(segmentUrl);
                         return {
                             toolResult: {
                                 data: response.data,

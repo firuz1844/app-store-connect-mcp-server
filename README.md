@@ -615,3 +615,17 @@ Regression test (uses a temporary fake `xcodebuild`; no Xcode or credentials nee
 ```sh
 node --test tests/xcode-execution.test.mjs
 ```
+
+### Analytics download security
+
+Analytics segment URLs are pre-signed. Downloads accept HTTPS URLs without URL
+credentials, preserve their signed query strings, and never send an Apple bearer
+token, including to external CDN hosts. Redirects are rejected; use the final
+segment URL returned by Apple. This does not restrict all destinations or provide
+a general SSRF policy. Sales and finance API requests remain authenticated.
+
+Regression test (no network or Apple credentials):
+
+```sh
+node --test tests/report-download.test.mjs
+```
