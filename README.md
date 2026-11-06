@@ -629,3 +629,31 @@ Regression test (no network or Apple credentials):
 ```sh
 node --test tests/report-download.test.mjs
 ```
+
+### Reproducible build and local startup (Node.js 22+)
+
+Use this fork's source checkout, not the upstream npm package, to get these fixes:
+
+```sh
+npm ci --ignore-scripts
+npm run typecheck
+npm run build
+npm test
+npm audit
+```
+
+Dependencies and generated output are intentionally not tracked in Git. The build
+cleans `dist` before compiling. `npm pack` builds first and only includes the server
+output, README and license; it excludes vendored CLI tools, tests and local keys.
+
+Set `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, and
+`APP_STORE_CONNECT_P8_PATH` in your MCP client's environment and use the absolute
+path to `dist/src/index.js` with `node`. Use a dedicated Apple key with minimum
+necessary permissions. Never commit the key. `npm start` uses stdio, not a network
+listener. Startup tests initialize MCP and list tools using dummy configuration;
+they do not read a key or call Apple. Running against Apple requires your own key.
+
+The Docker build uses a clean dependency installation, compiles the TypeScript,
+and runs as the unprivileged `node` user. Its allowlisted build context excludes
+local keys, `node_modules`, and previously built output. Use `docker run -i`
+without `-t` for MCP stdio; mount a key read-only only when connecting to Apple.
